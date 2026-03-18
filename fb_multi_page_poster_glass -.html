@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Facebook Multi-Page Poster</title>
+  <style>
+    :root {
+      --bg-1: #050816;
+      --bg-2: #0a1024;
+      --bg-3: #111a33;
+      --card: rgba(19, 28, 55, 0.55);
+      --card-strong: rgba(20, 28, 58, 0.72);
+      --text: #eef4ff;
+      --muted: #a7b6d7;
+      --line: rgba(125, 211, 252, 0.25);
+      --line-strong: rgba(168, 85, 247, 0.35);
+      --input: rgba(6, 12, 28, 0.62);
+      --accent: #22d3ee;
+      --accent-2: #a855f7;
+      --success: #34d399;
+      --warning: #f59e0b;
+      --danger: #fb7185;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --spotlight-x: 50%;
+      --spotlight-y: 30%;
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --blur: 18px;
+      --transition: 220ms cubic-bezier(.2,.8,.2,1);
+    }
+    body.light {
+      --bg-1: #edf4ff;
+      --bg-2: #f6faff;
+      --bg-3: #dce9ff;
+      --card: rgba(255,255,255,0.62);
+      --card-strong: rgba(255,255,255,0.76);
+      --text: #142136;
+      --muted: #61708d;
+      --line: rgba(56, 189, 248, 0.28);
+      --line-strong: rgba(139, 92, 246, 0.26);
+      --input: rgba(244, 248, 255, 0.9);
+      --accent: #06b6d4;
+      --accent-2: #8b5cf6;
+      --success: #10b981;
+      --warning: #d97706;
+      --danger: #e11d48;
+      --shadow: 0 20px 50px rgba(24,42,80,.12);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin:0; min-height:100%; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color: var(--text); background: radial-gradient(circle at 20% 20%, rgba(34,211,238,.18), transparent 28%), radial-gradient(circle at 80% 18%, rgba(168,85,247,.16), transparent 26%), linear-gradient(160deg, var(--bg-1), var(--bg-2) 45%, var(--bg-3)); }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(650px circle at var(--spotlight-x) var(--spotlight-y), rgba(34,211,238,.12), transparent 32%),
+        radial-gradient(500px circle at calc(var(--spotlight-x) + 12%) calc(var(--spotlight-y) + 6%), rgba(168,85,247,.12), transparent 28%);
+      z-index: 0;
+      transition: background 120ms linear;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: radial-gradient(circle at center, black 45%, transparent 90%);
+      opacity: .25;
+      z-index: 0;
+    }
+    .app { position: relative; z-index: 1; max-width: 1380px; margin: 0 auto; padding: 18px; }
+    .hero, .card { backdrop-filter: blur(var(--blur)); -webkit-backdrop-filter: blur(var(--blur)); background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); }
+    .hero {
+      border-radius: 30px;
+      padding: 22px;
+      position: sticky;
+      top: 14px;
+      z-index: 10;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .hero::before, .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,.12), transparent 32%, transparent 68%, rgba(255,255,255,.08));
+      pointer-events: none;
+    }
+    .hero h1 { margin: 0 0 6px; font-size: clamp(1.6rem, 3vw, 2.3rem); }
+    .hero p { margin: 0; color: var(--muted); }
+    .toolbar { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-top: 18px; }
+    .toolbar .group { display:flex; align-items:center; gap:10px; padding: 10px 14px; border-radius: 16px; background: var(--card-strong); border: 1px solid var(--line); }
+    .grid { display:grid; gap:16px; }
+    .grid.main { grid-template-columns: 1.15fr .85fr; }
+    @media (max-width: 1120px) { .grid.main { grid-template-columns: 1fr; } }
+    .card {
+      border-radius: var(--radius-xl);
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      transform: translateY(0) scale(1);
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition), background var(--transition);
+    }
+    .card:hover { transform: translateY(-2px) scale(1.002); border-color: var(--line-strong); }
+    .card-title { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom: 12px; }
+    .card-title h2 { margin:0; font-size: 1.08rem; }
+    .card-title .sub { color: var(--muted); font-size: .9rem; }
+    .field-grid { display:grid; grid-template-columns: 180px 1fr auto; gap:12px; align-items:center; }
+    .field-grid.onecol { grid-template-columns: 180px 1fr; }
+    .field-grid + .field-grid { margin-top: 12px; }
+    @media (max-width: 780px) { .field-grid, .field-grid.onecol { grid-template-columns: 1fr; } }
+    label, .small-label { color: var(--muted); font-size: .93rem; }
+    input[type="text"], input[type="number"], input[type="datetime-local"], select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      outline: none;
+      background: var(--input);
+      color: var(--text);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition), background var(--transition);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(34,211,238,.12); }
+    .btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      padding: 11px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition), background var(--transition);
+      box-shadow: 0 8px 20px rgba(0,0,0,.12);
+      white-space: nowrap;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: var(--line-strong); box-shadow: 0 12px 28px rgba(0,0,0,.18); }
+    .btn.primary { background: linear-gradient(135deg, rgba(34,211,238,.95), rgba(168,85,247,.95)); border-color: rgba(255,255,255,.22); color:white; }
+    .btn.success { background: linear-gradient(135deg, rgba(16,185,129,.95), rgba(34,211,238,.95)); color:white; }
+    .btn.warn { background: linear-gradient(135deg, rgba(245,158,11,.95), rgba(251,113,133,.95)); color:white; }
+    .btn.ghost { background: rgba(255,255,255,.02); }
+    .inline-actions, .button-row { display:flex; flex-wrap:wrap; gap:10px; }
+    .hint { color: var(--muted); font-size: .9rem; line-height: 1.5; margin-top: 10px; }
+    .table-wrap { overflow:auto; border-radius: 18px; border: 1px solid var(--line); background: rgba(255,255,255,.02); }
+    table { width: 100%; border-collapse: collapse; min-width: 1050px; }
+    th, td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,.06); vertical-align: top; }
+    th { position: sticky; top: 0; background: var(--card-strong); color: var(--muted); text-align: left; font-weight: 600; z-index: 1; }
+    tbody tr { transition: background var(--transition), transform var(--transition); }
+    tbody tr:hover { background: rgba(255,255,255,.03); }
+    .row-selected { box-shadow: inset 3px 0 0 var(--accent); }
+    .check-wrap { display:flex; align-items:center; justify-content:center; }
+    input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent-2); }
+    .pill { display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:8px 12px; border:1px solid var(--line); background: rgba(255,255,255,.04); }
+    .stats { display:grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap:12px; }
+    @media (max-width: 820px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .stat { padding: 14px; border-radius: 18px; background: var(--card-strong); border:1px solid var(--line); }
+    .stat .k { color: var(--muted); font-size: .84rem; }
+    .stat .v { font-size: 1.3rem; font-weight: 700; margin-top: 6px; }
+    .progress-shell { height: 14px; border-radius: 999px; background: rgba(255,255,255,.08); overflow: hidden; border: 1px solid var(--line); }
+    .progress-bar { height:100%; width:0%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width var(--transition); }
+    .status { margin-top: 10px; font-weight: 600; }
+    .log {
+      width: 100%; min-height: 240px; border-radius: 18px; border: 1px solid var(--line);
+      background: rgba(6,10,22,.42); color: var(--text); padding: 14px; overflow: auto; white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; line-height: 1.5;
+    }
+    body.light .log { background: rgba(245,249,255,.76); }
+    .footer-note { color: var(--muted); font-size: .88rem; margin-top: 8px; }
+    .hidden { display:none !important; }
+    .tag { padding: 6px 10px; border-radius: 999px; font-size: .8rem; border: 1px solid var(--line); color: var(--muted); }
+    .danger { color: var(--danger); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <h1 id="title"></h1>
+      <p id="subtitle"></p>
+      <div class="toolbar">
+        <div class="group">
+          <span id="themeLabel"></span>
+          <select id="themeSelect">
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+          </select>
+        </div>
+        <div class="group">
+          <span id="langLabel"></span>
+          <select id="langSelect">
+            <option value="en">EN</option>
+            <option value="km">KM</option>
+          </select>
+        </div>
+        <div class="pill"><span class="tag" id="autosaveTag"></span></div>
+      </div>
+    </section>
+
+    <div class="grid main">
+      <div class="grid">
+        <section class="card">
+          <div class="card-title">
+            <div>
+              <h2 id="contentTitle"></h2>
+              <div class="sub" id="contentSub"></div>
+            </div>
+          </div>
+
+          <div class="field-grid onecol">
+            <label for="globalMessage" id="globalMessageLabel"></label>
+            <textarea id="globalMessage"></textarea>
+          </div>
+          <div class="field-grid">
+            <label for="postLink" id="linkLabel"></label>
+            <input type="text" id="postLink" />
+            <div></div>
+          </div>
+          <div class="field-grid">
+            <label for="imageFile" id="localImageLabel"></label>
+            <input type="file" id="imageFile" accept="image/*" />
+            <button class="btn ghost" id="clearImageBtn" type="button">Clear</button>
+          </div>
+          <div class="field-grid">
+            <label for="imageUrl" id="imageUrlLabel"></label>
+            <input type="text" id="imageUrl" />
+            <div></div>
+          </div>
+          <div class="field-grid">
+            <label for="videoFile" id="localVideoLabel"></label>
+            <input type="file" id="videoFile" accept="video/*" />
+            <button class="btn ghost" id="clearVideoBtn" type="button">Clear</button>
+          </div>
+          <div class="hint" id="contentHint"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-title">
+            <div>
+              <h2 id="pagesTitle"></h2>
+              <div class="sub" id="pagesSub"></div>
+            </div>
+          </div>
+
+          <div class="button-row" style="margin-bottom:12px;">
+            <button class="btn" id="addPageBtn" type="button"></button>
+            <button class="btn" id="removeLastBtn" type="button"></button>
+            <button class="btn" id="selectAllBtn" type="button"></button>
+            <button class="btn" id="clearAllBtn" type="button"></button>
+            <button class="btn" id="importCsvBtn" type="button"></button>
+            <button class="btn" id="exportCsvBtn" type="button"></button>
+            <button class="btn" id="saveConfigBtn" type="button"></button>
+            <button class="btn" id="loadConfigBtn" type="button"></button>
+            <input type="file" id="csvInput" accept=".csv" class="hidden" />
+            <input type="file" id="configInput" accept=".json" class="hidden" />
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th id="useHeader"></th>
+                  <th id="pageNameHeader"></th>
+                  <th id="pageIdHeader"></th>
+                  <th id="pageTokenHeader"></th>
+                  <th id="pageMessageHeader"></th>
+                  <th id="pageActionHeader"></th>
+                </tr>
+              </thead>
+              <tbody id="pagesTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <div class="grid">
+        <section class="card">
+          <div class="card-title">
+            <div>
+              <h2 id="optionsTitle"></h2>
+              <div class="sub" id="optionsSub"></div>
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <label for="retryCount" id="retryCountLabel"></label>
+            <input type="number" id="retryCount" min="1" value="3" />
+            <div></div>
+          </div>
+          <div class="field-grid">
+            <label for="retryDelay" id="retryDelayLabel"></label>
+            <input type="number" id="retryDelay" min="1" value="5" />
+            <div></div>
+          </div>
+          <div class="field-grid">
+            <label for="pageDelay" id="pageDelayLabel"></label>
+            <input type="number" id="pageDelay" min="0" value="1" />
+            <div></div>
+          </div>
+          <div class="field-grid">
+            <label for="scheduleEnabled" id="schedulePostLabel"></label>
+            <div class="inline-actions"><input type="checkbox" id="scheduleEnabled" /><span id="scheduleToggleText"></span></div>
+            <div></div>
+          </div>
+          <div class="field-grid">
+            <label for="scheduleTime" id="scheduleTimeLabel"></label>
+            <input type="datetime-local" id="scheduleTime" />
+            <div></div>
+          </div>
+          <div class="hint" id="scheduleHint"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-title">
+            <div>
+              <h2 id="actionsTitle"></h2>
+              <div class="sub" id="actionsSub"></div>
+            </div>
+          </div>
+          <div class="button-row">
+            <button class="btn success" id="postSelectedBtn" type="button"></button>
+            <button class="btn warn" id="stopBtn" type="button"></button>
+            <button class="btn" id="testSelectedBtn" type="button"></button>
+            <button class="btn" id="testAllBtn" type="button"></button>
+            <button class="btn" id="clearLogBtn" type="button"></button>
+          </div>
+          <div style="margin-top:14px;" class="progress-shell"><div id="progressBar" class="progress-bar"></div></div>
+          <div id="statusText" class="status"></div>
+          <div class="footer-note" id="actionHint"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-title">
+            <div>
+              <h2 id="statsTitle"></h2>
+              <div class="sub" id="statsSub"></div>
+            </div>
+          </div>
+          <div class="stats">
+            <div class="stat"><div class="k" id="statSelectedLabel"></div><div class="v" id="statSelected">0</div></div>
+            <div class="stat"><div class="k" id="statTotalLabel"></div><div class="v" id="statTotal">0</div></div>
+            <div class="stat"><div class="k" id="statSuccessLabel"></div><div class="v" id="statSuccess">0</div></div>
+            <div class="stat"><div class="k" id="statFailedLabel"></div><div class="v" id="statFailed">0</div></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-title">
+            <div>
+              <h2 id="logTitle"></h2>
+              <div class="sub" id="logSub"></div>
+            </div>
+          </div>
+          <div id="logBox" class="log"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const GRAPH_API_VERSION = "v19.0";
+    const AUTO_SAVE_KEY = "fb_multi_page_poster_glass_autosave_v1";
+    const state = {
+      pages: [],
+      isPosting: false,
+      stopRequested: false,
+      successCount: 0,
+      failCount: 0,
+      translations: {
+        en: {
+          title: "Facebook Multi-Page Poster",
+          subtitle: "Real HTML app with glassmorphism, KM/EN switch, autosave, schedule, CSV, and page selection.",
+          autosave: "Autosave: local browser storage",
+          theme: "Theme",
+          language: "Language",
+          contentTitle: "Post Content",
+          contentSub: "Keep every function: text, link, image, video, schedule, retry, per-page message.",
+          globalMessage: "Global Message",
+          link: "Link (optional)",
+          localImage: "Local image file",
+          imageUrl: "Image URL",
+          localVideo: "Local video file",
+          clear: "Clear",
+          contentHint: "Per-page message overrides the global message. Media priority: Video > Image file > Image URL > Text/Link. Schedule works locally, so keep this page open until the time arrives.",
+          pagesTitle: "Facebook Pages",
+          pagesSub: "Select only the Pages you want to post or test.",
+          use: "Use",
+          pageName: "Page Name",
+          pageId: "Page ID",
+          pageToken: "Page Token",
+          pageMessage: "Per-Page Message",
+          action: "Action",
+          test: "Test",
+          addPage: "Add Page",
+          removeLast: "Remove Last",
+          selectAll: "Select All",
+          clearAll: "Clear All",
+          importCsv: "Import CSV",
+          exportCsv: "Export CSV Template",
+          saveConfig: "Save Config",
+          loadConfig: "Load Config",
+          optionsTitle: "Options",
+          optionsSub: "Posting control, retries, delays, and schedule.",
+          retryCount: "Retry count",
+          retryDelay: "Retry delay (sec)",
+          pageDelay: "Delay between pages (sec)",
+          schedulePost: "Schedule post",
+          scheduleToggle: "Enable scheduled posting",
+          scheduleTime: "Date & Time",
+          scheduleHint: "Scheduled posting is local in the browser. This tab must remain open.",
+          actionsTitle: "Actions",
+          actionsSub: "Post or test selected Pages only, or test everything.",
+          postSelected: "Post Selected Pages",
+          stop: "Stop",
+          testSelected: "Test Selected Pages",
+          testAll: "Test All Pages",
+          clearLog: "Clear Log",
+          actionHint: "For Page posting, use valid Page access tokens. Store carefully if using a shared computer.",
+          statsTitle: "Overview",
+          statsSub: "Live selected count and posting result summary.",
+          selected: "Selected",
+          total: "Total",
+          success: "Success",
+          failed: "Failed",
+          logTitle: "Log",
+          logSub: "Result messages and API responses.",
+          ready: "Ready",
+          noPages: "Please add at least one Page.",
+          noSelectedPages: "Please select at least one Page to post.",
+          emptyPost: "Please enter a message, link, image, or video.",
+          invalidOptions: "Retry and delay fields must be numbers.",
+          invalidSchedule: "Please choose a future schedule time.",
+          stopRequested: "Stop requested.",
+          busy: "Posting is already running.",
+          importedCsv: "Imported CSV rows",
+          configSaved: "Config saved",
+          configLoaded: "Config loaded",
+          autoLoaded: "Auto-loaded saved data",
+          connectedAs: "Connected as",
+          testingAll: "Testing all pages...",
+          testingSelected: "Testing selected pages...",
+          scheduledFor: "Scheduled for",
+          waiting: "Waiting",
+          remaining: "remaining",
+          done: "Done",
+          posted: "Posted successfully",
+          failedMsg: "Failed",
+          stopped: "Stopped",
+          csvTemplateName: "pages_template.csv",
+          configName: "fb_multi_page_poster_config.json",
+        },
+        km: {
+          title: "កម្មវិធីបង្ហោះទៅ Facebook Pages ច្រើន",
+          subtitle: "HTML app ពេញលេញ មាន glassmorphism, ប្តូរ KM/EN, autosave, schedule, CSV និងជ្រើស Page បាន។",
+          autosave: "Autosave: រក្សាទុកក្នុង browser",
+          theme: "រចនាបថ",
+          language: "ភាសា",
+          contentTitle: "មាតិកាបង្ហោះ",
+          contentSub: "រក្សាទុកមុខងារទាំងអស់: text, link, image, video, schedule, retry, និងសារផ្សេងគ្នាសម្រាប់ Page នីមួយៗ។",
+          globalMessage: "សាររួម",
+          link: "តំណ (ជាជម្រើស)",
+          localImage: "រូបភាពក្នុងម៉ាស៊ីន",
+          imageUrl: "តំណរូបភាព",
+          localVideo: "វីដេអូក្នុងម៉ាស៊ីន",
+          clear: "សម្អាត",
+          contentHint: "សាររបស់ Page នីមួយៗ នឹងជំនួសសាររួម។ លំដាប់មេឌៀ៖ វីដេអូ > រូបភាពក្នុងម៉ាស៊ីន > តំណរូបភាព > អត្ថបទ/តំណ។ Schedule ដំណើរការនៅក្នុង browser ដូច្នេះត្រូវទុក tab នេះឲ្យបើក។",
+          pagesTitle: "Facebook Pages",
+          pagesSub: "ជ្រើសតែ Page ដែលអ្នកចង់បង្ហោះ ឬតេស្ត។",
+          use: "ជ្រើស",
+          pageName: "ឈ្មោះ Page",
+          pageId: "Page ID",
+          pageToken: "Page Token",
+          pageMessage: "សារសម្រាប់ Page នីមួយៗ",
+          action: "សកម្មភាព",
+          test: "តេស្ត",
+          addPage: "បន្ថែម Page",
+          removeLast: "លុបចុងក្រោយ",
+          selectAll: "ជ្រើសទាំងអស់",
+          clearAll: "ដកជម្រើសទាំងអស់",
+          importCsv: "នាំចូល CSV",
+          exportCsv: "នាំចេញ CSV គំរូ",
+          saveConfig: "រក្សាទុក Config",
+          loadConfig: "បើក Config",
+          optionsTitle: "ជម្រើស",
+          optionsSub: "គ្រប់គ្រងការបង្ហោះ, retry, delay និងកំណត់ពេល។",
+          retryCount: "ចំនួន Retry",
+          retryDelay: "ពន្យារពេល Retry (វិនាទី)",
+          pageDelay: "ពន្យារពេលរវាង Page (វិនាទី)",
+          schedulePost: "កំណត់ពេលបង្ហោះ",
+          scheduleToggle: "បើកការបង្ហោះតាមកាលវិភាគ",
+          scheduleTime: "ថ្ងៃ & ម៉ោង",
+          scheduleHint: "ការបង្ហោះតាមកាលវិភាគ ដំណើរការនៅក្នុង browser ក្នុង tab នេះ។",
+          actionsTitle: "សកម្មភាព",
+          actionsSub: "បង្ហោះ ឬតេស្តតែ Page ដែលបានជ្រើស ឬតេស្តទាំងអស់។",
+          postSelected: "បង្ហោះទៅ Page ដែលបានជ្រើស",
+          stop: "បញ្ឈប់",
+          testSelected: "តេស្ត Page ដែលបានជ្រើស",
+          testAll: "តេស្ត Page ទាំងអស់",
+          clearLog: "សម្អាត Log",
+          actionHint: "សម្រាប់ការបង្ហោះទៅ Page សូមប្រើ Page access token ត្រឹមត្រូវ។ ប្រុងប្រយ័ត្នប្រសិនបើកុំព្យូទ័រនេះមានអ្នកប្រើរួម។",
+          statsTitle: "សង្ខេប",
+          statsSub: "ចំនួន Page ដែលបានជ្រើស និងលទ្ធផលការបង្ហោះ។",
+          selected: "បានជ្រើស",
+          total: "សរុប",
+          success: "ជោគជ័យ",
+          failed: "បរាជ័យ",
+          logTitle: "Log",
+          logSub: "សារលទ្ធផល និងការឆ្លើយតបពី API។",
+          ready: "រួចរាល់",
+          noPages: "សូមបន្ថែម Page យ៉ាងហោចណាស់មួយ។",
+          noSelectedPages: "សូមជ្រើសយ៉ាងហោចណាស់មួយ Page ដើម្បីបង្ហោះ។",
+          emptyPost: "សូមបញ្ចូលសារ តំណ រូបភាព ឬវីដេអូ។",
+          invalidOptions: "Retry និង Delay ត្រូវតែជាលេខ។",
+          invalidSchedule: "សូមជ្រើសម៉ោងអនាគតសម្រាប់ Schedule។",
+          stopRequested: "បានស្នើសុំបញ្ឈប់។",
+          busy: "កំពុងបង្ហោះរួចហើយ។",
+          importedCsv: "បាននាំចូលជួរ CSV",
+          configSaved: "បានរក្សាទុក Config",
+          configLoaded: "បានបើក Config",
+          autoLoaded: "បានបើកទិន្នន័យដែលរក្សាទុកស្វ័យប្រវត្តិ",
+          connectedAs: "បានភ្ជាប់ជា",
+          testingAll: "កំពុងតេស្ត Page ទាំងអស់...",
+          testingSelected: "កំពុងតេស្ត Page ដែលបានជ្រើស...",
+          scheduledFor: "បានកំណត់សម្រាប់",
+          waiting: "កំពុងរង់ចាំ",
+          remaining: "នៅសល់",
+          done: "រួចរាល់",
+          posted: "បានបង្ហោះជោគជ័យ",
+          failedMsg: "បរាជ័យ",
+          stopped: "បានបញ្ឈប់",
+          csvTemplateName: "pages_template.csv",
+          configName: "fb_multi_page_poster_config.json",
+        }
+      }
+    };
+
+    const els = {
+      body: document.body,
+      title: document.getElementById('title'),
+      subtitle: document.getElementById('subtitle'),
+      themeLabel: document.getElementById('themeLabel'),
+      langLabel: document.getElementById('langLabel'),
+      themeSelect: document.getElementById('themeSelect'),
+      langSelect: document.getElementById('langSelect'),
+      autosaveTag: document.getElementById('autosaveTag'),
+      contentTitle: document.getElementById('contentTitle'),
+      contentSub: document.getElementById('contentSub'),
+      globalMessageLabel: document.getElementById('globalMessageLabel'),
+      globalMessage: document.getElementById('globalMessage'),
+      linkLabel: document.getElementById('linkLabel'),
+      postLink: document.getElementById('postLink'),
+      localImageLabel: document.getElementById('localImageLabel'),
+      imageFile: document.getElementById('imageFile'),
+      clearImageBtn: document.getElementById('clearImageBtn'),
+      imageUrlLabel: document.getElementById('imageUrlLabel'),
+      imageUrl: document.getElementById('imageUrl'),
+      localVideoLabel: document.getElementById('localVideoLabel'),
+      videoFile: document.getElementById('videoFile'),
+      clearVideoBtn: document.getElementById('clearVideoBtn'),
+      contentHint: document.getElementById('contentHint'),
+      pagesTitle: document.getElementById('pagesTitle'),
+      pagesSub: document.getElementById('pagesSub'),
+      addPageBtn: document.getElementById('addPageBtn'),
+      removeLastBtn: document.getElementById('removeLastBtn'),
+      selectAllBtn: document.getElementById('selectAllBtn'),
+      clearAllBtn: document.getElementById('clearAllBtn'),
+      importCsvBtn: document.getElementById('importCsvBtn'),
+      exportCsvBtn: document.getElementById('exportCsvBtn'),
+      saveConfigBtn: document.getElementById('saveConfigBtn'),
+      loadConfigBtn: document.getElementById('loadConfigBtn'),
+      csvInput: document.getElementById('csvInput'),
+      configInput: document.getElementById('configInput'),
+      useHeader: document.getElementById('useHeader'),
+      pageNameHeader: document.getElementById('pageNameHeader'),
+      pageIdHeader: document.getElementById('pageIdHeader'),
+      pageTokenHeader: document.getElementById('pageTokenHeader'),
+      pageMessageHeader: document.getElementById('pageMessageHeader'),
+      pageActionHeader: document.getElementById('pageActionHeader'),
+      pagesTableBody: document.getElementById('pagesTableBody'),
+      optionsTitle: document.getElementById('optionsTitle'),
+      optionsSub: document.getElementById('optionsSub'),
+      retryCountLabel: document.getElementById('retryCountLabel'),
+      retryDelayLabel: document.getElementById('retryDelayLabel'),
+      pageDelayLabel: document.getElementById('pageDelayLabel'),
+      retryCount: document.getElementById('retryCount'),
+      retryDelay: document.getElementById('retryDelay'),
+      pageDelay: document.getElementById('pageDelay'),
+      schedulePostLabel: document.getElementById('schedulePostLabel'),
+      scheduleToggleText: document.getElementById('scheduleToggleText'),
+      scheduleEnabled: document.getElementById('scheduleEnabled'),
+      scheduleTimeLabel: document.getElementById('scheduleTimeLabel'),
+      scheduleTime: document.getElementById('scheduleTime'),
+      scheduleHint: document.getElementById('scheduleHint'),
+      actionsTitle: document.getElementById('actionsTitle'),
+      actionsSub: document.getElementById('actionsSub'),
+      postSelectedBtn: document.getElementById('postSelectedBtn'),
+      stopBtn: document.getElementById('stopBtn'),
+      testSelectedBtn: document.getElementById('testSelectedBtn'),
+      testAllBtn: document.getElementById('testAllBtn'),
+      clearLogBtn: document.getElementById('clearLogBtn'),
+      progressBar: document.getElementById('progressBar'),
+      statusText: document.getElementById('statusText'),
+      actionHint: document.getElementById('actionHint'),
+      statsTitle: document.getElementById('statsTitle'),
+      statsSub: document.getElementById('statsSub'),
+      statSelectedLabel: document.getElementById('statSelectedLabel'),
+      statTotalLabel: document.getElementById('statTotalLabel'),
+      statSuccessLabel: document.getElementById('statSuccessLabel'),
+      statFailedLabel: document.getElementById('statFailedLabel'),
+      statSelected: document.getElementById('statSelected'),
+      statTotal: document.getElementById('statTotal'),
+      statSuccess: document.getElementById('statSuccess'),
+      statFailed: document.getElementById('statFailed'),
+      logTitle: document.getElementById('logTitle'),
+      logSub: document.getElementById('logSub'),
+      logBox: document.getElementById('logBox')
+    };
+
+    function t(key) {
+      return state.translations[els.langSelect.value || 'en'][key] || key;
+    }
+
+    function nowTime() {
+      return new Date().toLocaleTimeString('en-GB', { hour12: false });
+    }
+
+    function log(msg) {
+      els.logBox.textContent += `${nowTime()}  ${msg}\n`;
+      els.logBox.scrollTop = els.logBox.scrollHeight;
+    }
+
+    function setStatus(msg, color = '') {
+      els.statusText.textContent = msg;
+      els.statusText.style.color = color || 'var(--text)';
+    }
+
+    function updateStats() {
+      const selected = state.pages.filter(p => p.enabled).length;
+      els.statSelected.textContent = selected;
+      els.statTotal.textContent = state.pages.length;
+      els.statSuccess.textContent = state.successCount;
+      els.statFailed.textContent = state.failCount;
+    }
+
+    function setProgress(current, total) {
+      const pct = total ? Math.max(0, Math.min(100, (current / total) * 100)) : 0;
+      els.progressBar.style.width = `${pct}%`;
+    }
+
+    function applyTexts() {
+      els.title.textContent = t('title');
+      els.subtitle.textContent = t('subtitle');
+      els.themeLabel.textContent = t('theme');
+      els.langLabel.textContent = t('language');
+      els.autosaveTag.textContent = t('autosave');
+      els.contentTitle.textContent = t('contentTitle');
+      els.contentSub.textContent = t('contentSub');
+      els.globalMessageLabel.textContent = t('globalMessage');
+      els.linkLabel.textContent = t('link');
+      els.localImageLabel.textContent = t('localImage');
+      els.imageUrlLabel.textContent = t('imageUrl');
+      els.localVideoLabel.textContent = t('localVideo');
+      els.clearImageBtn.textContent = t('clear');
+      els.clearVideoBtn.textContent = t('clear');
+      els.contentHint.textContent = t('contentHint');
+      els.pagesTitle.textContent = t('pagesTitle');
+      els.pagesSub.textContent = t('pagesSub');
+      els.useHeader.textContent = t('use');
+      els.pageNameHeader.textContent = t('pageName');
+      els.pageIdHeader.textContent = t('pageId');
+      els.pageTokenHeader.textContent = t('pageToken');
+      els.pageMessageHeader.textContent = t('pageMessage');
+      els.pageActionHeader.textContent = t('action');
+      els.addPageBtn.textContent = t('addPage');
+      els.removeLastBtn.textContent = t('removeLast');
+      els.selectAllBtn.textContent = t('selectAll');
+      els.clearAllBtn.textContent = t('clearAll');
+      els.importCsvBtn.textContent = t('importCsv');
+      els.exportCsvBtn.textContent = t('exportCsv');
+      els.saveConfigBtn.textContent = t('saveConfig');
+      els.loadConfigBtn.textContent = t('loadConfig');
+      els.optionsTitle.textContent = t('optionsTitle');
+      els.optionsSub.textContent = t('optionsSub');
+      els.retryCountLabel.textContent = t('retryCount');
+      els.retryDelayLabel.textContent = t('retryDelay');
+      els.pageDelayLabel.textContent = t('pageDelay');
+      els.schedulePostLabel.textContent = t('schedulePost');
+      els.scheduleToggleText.textContent = t('scheduleToggle');
+      els.scheduleTimeLabel.textContent = t('scheduleTime');
+      els.scheduleHint.textContent = t('scheduleHint');
+      els.actionsTitle.textContent = t('actionsTitle');
+      els.actionsSub.textContent = t('actionsSub');
+      els.postSelectedBtn.textContent = t('postSelected');
+      els.stopBtn.textContent = t('stop');
+      els.testSelectedBtn.textContent = t('testSelected');
+      els.testAllBtn.textContent = t('testAll');
+      els.clearLogBtn.textContent = t('clearLog');
+      els.actionHint.textContent = t('actionHint');
+      els.statsTitle.textContent = t('statsTitle');
+      els.statsSub.textContent = t('statsSub');
+      els.statSelectedLabel.textContent = t('selected');
+      els.statTotalLabel.textContent = t('total');
+      els.statSuccessLabel.textContent = t('success');
+      els.statFailedLabel.textContent = t('failed');
+      els.logTitle.textContent = t('logTitle');
+      els.logSub.textContent = t('logSub');
+      if (!els.statusText.textContent) setStatus(t('ready'));
+      renderPages();
+    }
+
+    function applyTheme() {
+      document.body.classList.toggle('light', els.themeSelect.value === 'light');
+      autosave();
+    }
+
+    function defaultScheduleLocal() {
+      const d = new Date(Date.now() + 5 * 60 * 1000);
+      const pad = n => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function getFormState() {
+      return {
+        theme: els.themeSelect.value,
+        language: els.langSelect.value,
+        globalMessage: els.globalMessage.value,
+        link: els.postLink.value,
+        imageUrl: els.imageUrl.value,
+        retryCount: els.retryCount.value,
+        retryDelay: els.retryDelay.value,
+        pageDelay: els.pageDelay.value,
+        scheduleEnabled: els.scheduleEnabled.checked,
+        scheduleTime: els.scheduleTime.value,
+        pages: state.pages,
+      };
+    }
+
+    function applyFormState(data) {
+      els.themeSelect.value = data.theme || 'dark';
+      els.langSelect.value = data.language || 'en';
+      els.globalMessage.value = data.globalMessage || '';
+      els.postLink.value = data.link || '';
+      els.imageUrl.value = data.imageUrl || '';
+      els.retryCount.value = data.retryCount || '3';
+      els.retryDelay.value = data.retryDelay || '5';
+      els.pageDelay.value = data.pageDelay || '1';
+      els.scheduleEnabled.checked = !!data.scheduleEnabled;
+      els.scheduleTime.value = data.scheduleTime || defaultScheduleLocal();
+      state.pages = Array.isArray(data.pages) ? data.pages : [];
+      if (!state.pages.length) {
+        state.pages = [blankPage(), blankPage(), blankPage()];
+      }
+      applyTheme();
+      applyTexts();
+      updateStats();
+    }
+
+    function autosave() {
+      try { localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(getFormState())); } catch (e) {}
+      updateStats();
+    }
+
+    function loadAutosave() {
+      try {
+        const raw = localStorage.getItem(AUTO_SAVE_KEY);
+        if (raw) {
+          applyFormState(JSON.parse(raw));
+          log(`[INFO] ${t('autoLoaded')}`);
+          return;
+        }
+      } catch (e) {}
+      applyFormState({ pages: [blankPage(), blankPage(), blankPage()], scheduleTime: defaultScheduleLocal() });
+    }
+
+    function blankPage() {
+      return { enabled: true, name: '', page_id: '', page_token: '', message: '' };
+    }
+
+    function renderPages() {
+      els.pagesTableBody.innerHTML = '';
+      state.pages.forEach((page, index) => {
+        const tr = document.createElement('tr');
+        if (page.enabled) tr.classList.add('row-selected');
+        tr.innerHTML = `
+          <td><div class="check-wrap"><input type="checkbox" ${page.enabled ? 'checked' : ''} data-field="enabled" data-index="${index}" /></div></td>
+          <td><input type="text" data-field="name" data-index="${index}" value="${escapeHtml(page.name || '')}" /></td>
+          <td><input type="text" data-field="page_id" data-index="${index}" value="${escapeHtml(page.page_id || '')}" /></td>
+          <td><input type="text" data-field="page_token" data-index="${index}" value="${escapeHtml(page.page_token || '')}" /></td>
+          <td><input type="text" data-field="message" data-index="${index}" value="${escapeHtml(page.message || '')}" /></td>
+          <td><button class="btn" type="button" data-action="test" data-index="${index}">${t('test')}</button></td>
+        `;
+        els.pagesTableBody.appendChild(tr);
+      });
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function selectedPages() {
+      return state.pages.filter(p => p.enabled && p.page_id && p.page_token);
+    }
+
+    function allValidPages() {
+      return state.pages.filter(p => p.page_id && p.page_token);
+    }
+
+    function sleep(ms) {
+      return new Promise(r => setTimeout(r, ms));
+    }
+
+    function safeJson(text) {
+      try { return JSON.parse(text); } catch { return { error: { message: text } }; }
+    }
+
+    async function apiGet(url) {
+      const res = await fetch(url, { method: 'GET' });
+      const text = await res.text();
+      return safeJson(text);
+    }
+
+    async function apiPostForm(url, form) {
+      const res = await fetch(url, { method: 'POST', body: form });
+      const text = await res.text();
+      return safeJson(text);
+    }
+
+    async function testPage(page) {
+      const url = `https://graph.facebook.com/${GRAPH_API_VERSION}/${encodeURIComponent(page.page_id)}?fields=id,name&access_token=${encodeURIComponent(page.page_token)}`;
+      const data = await apiGet(url);
+      if (data && data.id) {
+        log(`[OK] ${page.name || page.page_id}: ${t('connectedAs')} ${data.name} (${data.id})`);
+      } else {
+        log(`[ERROR] ${page.name || page.page_id}: ${JSON.stringify(data)}`);
+      }
+    }
+
+    async function postFeed(page, message, link) {
+      const form = new FormData();
+      form.append('access_token', page.page_token);
+      if (message) form.append('message', message);
+      if (link) form.append('link', link);
+      return apiPostForm(`https://graph.facebook.com/${GRAPH_API_VERSION}/${page.page_id}/feed`, form);
+    }
+
+    async function postPhotoUrl(page, message, imageUrl) {
+      const form = new FormData();
+      form.append('access_token', page.page_token);
+      form.append('url', imageUrl);
+      form.append('published', 'true');
+      if (message) form.append('caption', message);
+      return apiPostForm(`https://graph.facebook.com/${GRAPH_API_VERSION}/${page.page_id}/photos`, form);
+    }
+
+    async function postPhotoFile(page, message, file) {
+      const form = new FormData();
+      form.append('access_token', page.page_token);
+      form.append('published', 'true');
+      if (message) form.append('caption', message);
+      form.append('source', file, file.name);
+      return apiPostForm(`https://graph.facebook.com/${GRAPH_API_VERSION}/${page.page_id}/photos`, form);
+    }
+
+    async function postVideoFile(page, message, file) {
+      const form = new FormData();
+      form.append('access_token', page.page_token);
+      if (message) {
+        form.append('description', message);
+        form.append('title', 'Video Post');
+      }
+      form.append('source', file, file.name);
+      return apiPostForm(`https://graph.facebook.com/${GRAPH_API_VERSION}/${page.page_id}/videos`, form);
+    }
+
+    async function postWithRetry(page, message, link, imageUrl, imageFile, videoFile, retryCount, retryDelay) {
+      let last = {};
+      for (let attempt = 1; attempt <= retryCount; attempt++) {
+        if (state.stopRequested) return { ok: false, result: { error: { message: 'Stopped by user' } } };
+        try {
+          let result;
+          if (videoFile) result = await postVideoFile(page, message, videoFile);
+          else if (imageFile) result = await postPhotoFile(page, message, imageFile);
+          else if (imageUrl) result = await postPhotoUrl(page, message, imageUrl);
+          else result = await postFeed(page, message, link);
+          last = result;
+          if (result.id || result.post_id) {
+            if (attempt > 1) log(`[RETRY OK] ${page.name || page.page_id}: success on attempt ${attempt}`);
+            return { ok: true, result };
+          }
+          log(`[TRY ${attempt}/${retryCount}] ${page.name || page.page_id}: failed, retrying...`);
+          if (attempt < retryCount) await sleep(retryDelay * 1000);
+        } catch (e) {
+          last = { error: { message: String(e) } };
+          log(`[TRY ${attempt}/${retryCount}] ${page.name || page.page_id}: exception ${e}`);
+          if (attempt < retryCount) await sleep(retryDelay * 1000);
+        }
+      }
+      return { ok: false, result: last };
+    }
+
+    function validateForPost() {
+      const pages = selectedPages();
+      const allPages = allValidPages();
+      if (!state.pages.length || !allPages.length) {
+        alert(t('noPages')); return null;
+      }
+      if (!pages.length) {
+        alert(t('noSelectedPages')); return null;
+      }
+      const globalMessage = els.globalMessage.value.trim();
+      const link = els.postLink.value.trim();
+      const imageUrl = els.imageUrl.value.trim();
+      const imageFile = els.imageFile.files[0] || null;
+      const videoFile = els.videoFile.files[0] || null;
+      if (!globalMessage && !link && !imageUrl && !imageFile && !videoFile) {
+        const hasRowMsg = pages.some(p => (p.message || '').trim());
+        if (!hasRowMsg) { alert(t('emptyPost')); return null; }
+      }
+      const retryCount = Number(els.retryCount.value || 0);
+      const retryDelay = Number(els.retryDelay.value || 0);
+      const pageDelay = Number(els.pageDelay.value || 0);
+      if (Number.isNaN(retryCount) || Number.isNaN(retryDelay) || Number.isNaN(pageDelay)) {
+        alert(t('invalidOptions')); return null;
+      }
+      let scheduleEnabled = els.scheduleEnabled.checked;
+      let scheduleDate = null;
+      if (scheduleEnabled) {
+        if (!els.scheduleTime.value) { alert(t('invalidSchedule')); return null; }
+        scheduleDate = new Date(els.scheduleTime.value);
+        if (!(scheduleDate instanceof Date) || Number.isNaN(scheduleDate.getTime()) || scheduleDate <= new Date()) {
+          alert(t('invalidSchedule')); return null;
+        }
+      }
+      return {
+        pages, globalMessage, link, imageUrl, imageFile, videoFile,
+        retryCount: Math.max(1, retryCount || 1),
+        retryDelay: Math.max(1, retryDelay || 1),
+        pageDelay: Math.max(0, pageDelay || 0),
+        scheduleEnabled, scheduleDate
+      };
+    }
+
+    async function runPosting(payload) {
+      state.successCount = 0;
+      state.failCount = 0;
+      setProgress(0, payload.pages.length);
+      updateStats();
+      if (payload.scheduleEnabled) {
+        log(`[INFO] ${t('scheduledFor')} ${payload.scheduleDate.toLocaleString()}`);
+        while (new Date() < payload.scheduleDate) {
+          if (state.stopRequested) {
+            log(`[STOPPED] ${t('stopped')}`);
+            state.isPosting = false;
+            setStatus(t('stopped'), 'var(--warning)');
+            return;
+          }
+          const remainingMs = payload.scheduleDate - new Date();
+          const seconds = Math.max(0, Math.floor(remainingMs / 1000));
+          setStatus(`${t('waiting')}... ${seconds}s ${t('remaining')}`, 'var(--warning)');
+          await sleep(1000);
+        }
+      }
+
+      for (let i = 0; i < payload.pages.length; i++) {
+        if (state.stopRequested) {
+          log(`[STOPPED] ${t('stopped')}`);
+          state.isPosting = false;
+          setStatus(t('stopped'), 'var(--warning)');
+          return;
+        }
+        const page = payload.pages[i];
+        const message = (page.message || '').trim() || payload.globalMessage;
+        setStatus(`Posting ${i + 1}/${payload.pages.length}: ${page.name || page.page_id}`, 'var(--accent)');
+        const res = await postWithRetry(page, message, payload.link, payload.imageUrl, payload.imageFile, payload.videoFile, payload.retryCount, payload.retryDelay);
+        if (res.ok) {
+          state.successCount += 1;
+          const postId = res.result.id || res.result.post_id || 'unknown_id';
+          log(`[SUCCESS] ${page.name || page.page_id}: ${t('posted')} (${postId})`);
+        } else {
+          state.failCount += 1;
+          log(`[FAILED] ${page.name || page.page_id}: ${JSON.stringify(res.result)}`);
+        }
+        setProgress(i + 1, payload.pages.length);
+        updateStats();
+        if (i < payload.pages.length - 1 && payload.pageDelay > 0) {
+          await sleep(payload.pageDelay * 1000);
+        }
+      }
+      state.isPosting = false;
+      const summary = `${t('done')}. ${t('success')}: ${state.successCount}, ${t('failed')}: ${state.failCount}`;
+      log(`[DONE] ${summary}`);
+      setStatus(summary, state.failCount ? 'var(--warning)' : 'var(--success)');
+    }
+
+    function parseCsv(text) {
+      const lines = text.split(/\r?\n/).filter(Boolean);
+      if (!lines.length) return [];
+      const headers = splitCsvLine(lines[0]).map(s => s.trim());
+      return lines.slice(1).map(line => {
+        const cols = splitCsvLine(line);
+        const row = {};
+        headers.forEach((h, i) => row[h] = cols[i] || '');
+        return row;
+      });
+    }
+
+    function splitCsvLine(line) {
+      const out = [];
+      let cur = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
+          else inQuotes = !inQuotes;
+        } else if (ch === ',' && !inQuotes) {
+          out.push(cur); cur = '';
+        } else cur += ch;
+      }
+      out.push(cur);
+      return out;
+    }
+
+    function downloadFile(name, text, type) {
+      const blob = new Blob([text], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function bindEvents() {
+      document.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth) * 100;
+        const y = (e.clientY / window.innerHeight) * 100;
+        document.documentElement.style.setProperty('--spotlight-x', `${x}%`);
+        document.documentElement.style.setProperty('--spotlight-y', `${y}%`);
+      });
+
+      [els.themeSelect, els.langSelect, els.globalMessage, els.postLink, els.imageUrl, els.retryCount, els.retryDelay, els.pageDelay, els.scheduleEnabled, els.scheduleTime].forEach(el => {
+        el.addEventListener('input', autosave);
+        el.addEventListener('change', autosave);
+      });
+
+      els.themeSelect.addEventListener('change', () => { applyTheme(); applyTexts(); });
+      els.langSelect.addEventListener('change', () => { applyTexts(); autosave(); });
+
+      els.clearImageBtn.addEventListener('click', () => { els.imageFile.value = ''; autosave(); });
+      els.clearVideoBtn.addEventListener('click', () => { els.videoFile.value = ''; autosave(); });
+      els.imageFile.addEventListener('change', autosave);
+      els.videoFile.addEventListener('change', autosave);
+
+      els.addPageBtn.addEventListener('click', () => { state.pages.push(blankPage()); renderPages(); autosave(); });
+      els.removeLastBtn.addEventListener('click', () => { state.pages.pop(); renderPages(); autosave(); });
+      els.selectAllBtn.addEventListener('click', () => { state.pages.forEach(p => p.enabled = true); renderPages(); autosave(); });
+      els.clearAllBtn.addEventListener('click', () => { state.pages.forEach(p => p.enabled = false); renderPages(); autosave(); });
+
+      els.importCsvBtn.addEventListener('click', () => els.csvInput.click());
+      els.csvInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const text = await file.text();
+        const rows = parseCsv(text);
+        state.pages = rows.map(r => ({
+          enabled: true,
+          name: (r.name || '').trim(),
+          page_id: (r.page_id || '').trim(),
+          page_token: (r.page_token || '').trim(),
+          message: (r.message || '').trim(),
+        }));
+        if (!state.pages.length) state.pages = [blankPage()];
+        renderPages(); autosave(); log(`[INFO] ${t('importedCsv')}: ${state.pages.length}`);
+        els.csvInput.value = '';
+      });
+
+      els.exportCsvBtn.addEventListener('click', () => {
+        const csv = 'name,page_id,page_token,message\nMy Page 1,123456789012345,EAAG_example_token_1,Custom message for page 1\nMy Page 2,234567890123456,EAAG_example_token_2,\n';
+        downloadFile(t('csvTemplateName'), csv, 'text/csv;charset=utf-8');
+      });
+
+      els.saveConfigBtn.addEventListener('click', () => {
+        downloadFile(t('configName'), JSON.stringify(getFormState(), null, 2), 'application/json;charset=utf-8');
+        log(`[INFO] ${t('configSaved')}`);
+      });
+
+      els.loadConfigBtn.addEventListener('click', () => els.configInput.click());
+      els.configInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const text = await file.text();
+        applyFormState(JSON.parse(text));
+        autosave();
+        log(`[INFO] ${t('configLoaded')}`);
+        els.configInput.value = '';
+      });
+
+      els.pagesTableBody.addEventListener('input', (e) => {
+        const idx = Number(e.target.dataset.index);
+        const field = e.target.dataset.field;
+        if (Number.isNaN(idx) || !field || !state.pages[idx]) return;
+        if (field === 'enabled') state.pages[idx][field] = e.target.checked;
+        else state.pages[idx][field] = e.target.value;
+        renderPages(); autosave();
+      });
+
+      els.pagesTableBody.addEventListener('change', (e) => {
+        const idx = Number(e.target.dataset.index);
+        const field = e.target.dataset.field;
+        if (Number.isNaN(idx) || !field || !state.pages[idx]) return;
+        if (field === 'enabled') state.pages[idx][field] = e.target.checked;
+        else state.pages[idx][field] = e.target.value;
+        renderPages(); autosave();
+      });
+
+      els.pagesTableBody.addEventListener('click', async (e) => {
+        const idx = Number(e.target.dataset.index);
+        const action = e.target.dataset.action;
+        if (Number.isNaN(idx) || !action || !state.pages[idx]) return;
+        if (action === 'test') {
+          const page = state.pages[idx];
+          if (!page.page_id || !page.page_token) return;
+          await testPage(page);
+        }
+      });
+
+      els.testAllBtn.addEventListener('click', async () => {
+        const pages = allValidPages();
+        if (!pages.length) return alert(t('noPages'));
+        log(`[INFO] ${t('testingAll')}`);
+        for (const p of pages) await testPage(p);
+      });
+
+      els.testSelectedBtn.addEventListener('click', async () => {
+        const pages = selectedPages();
+        if (!pages.length) return alert(t('noSelectedPages'));
+        log(`[INFO] ${t('testingSelected')}`);
+        for (const p of pages) await testPage(p);
+      });
+
+      els.clearLogBtn.addEventListener('click', () => { els.logBox.textContent = ''; });
+
+      els.stopBtn.addEventListener('click', () => {
+        state.stopRequested = true;
+        log(`[INFO] ${t('stopRequested')}`);
+        setStatus(t('stopRequested'), 'var(--warning)');
+      });
+
+      els.postSelectedBtn.addEventListener('click', async () => {
+        if (state.isPosting) return alert(t('busy'));
+        const payload = validateForPost();
+        if (!payload) return;
+        state.stopRequested = false;
+        state.isPosting = true;
+        els.logBox.textContent = '';
+        await runPosting(payload);
+      });
+    }
+
+    bindEvents();
+    loadAutosave();
+    applyTexts();
+    updateStats();
+    setStatus(t('ready'));
+  </script>
+</body>
+</html>
